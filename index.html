@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Fishing Game - Depth & Adventure</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>⛵ SUPER FISHING QUEST ⛵</h1>
+            <p class="subtitle">Catch 'Em All - From Depths to Stars</p>
+        </header>
+
+        <!-- Main Game Area -->
+        <div class="game-wrapper">
+            <!-- Left Panel - Info -->
+            <div class="left-panel">
+                <div class="game-stats">
+                    <div class="stat-box">
+                        <h3>🕐 TIME</h3>
+                        <p id="gameTime">6:00 AM</p>
+                        <small id="timeType">Daytime</small>
+                    </div>
+                    <div class="stat-box">
+                        <h3>💰 SCORE</h3>
+                        <p id="score">0</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>🎣 CAUGHT</h3>
+                        <p id="fishCaught">0</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>📊 LEVEL</h3>
+                        <p id="level">1</p>
+                    </div>
+                </div>
+
+                <div class="fishing-zone">
+                    <h3>🌊 Zone Type</h3>
+                    <select id="waterType">
+                        <option value="freshwater">Freshwater</option>
+                        <option value="saltwater">Saltwater</option>
+                    </select>
+                </div>
+
+                <button id="castButton" class="cast-btn">🎣 CAST LINE</button>
+                <button id="timeButton" class="time-btn">⏰ ADVANCE TIME</button>
+            </div>
+
+            <!-- Center - Game Canvas/Fishing Area -->
+            <div class="center-panel">
+                <div class="fishing-area">
+                    <canvas id="gameCanvas" width="400" height="500"></canvas>
+                    <div class="fishing-status" id="fishingStatus">
+                        <p>Ready to fish...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Inventory -->
+            <div class="right-panel">
+                <div class="inventory-header">
+                    <h3>🎒 INVENTORY</h3>
+                    <button id="clearBtn" class="clear-btn">Clear</button>
+                </div>
+                <div class="inventory-stats">
+                    <p><strong>Capacity:</strong> <span id="capacity">0</span>/20</p>
+                    <p><strong>Species:</strong> <span id="speciesCount">0</span>/102</p>
+                </div>
+                <div id="inventory" class="inventory-list">
+                    <!-- Fish will be added here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Caught Fish Modal -->
+        <div id="caughtModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 id="fishName">You caught a Fish!</h2>
+                <div class="fish-info">
+                    <p id="fishDesc"></p>
+                    <p class="fish-points" id="fishPoints"></p>
+                    <p class="fish-rarity" id="fishRarity"></p>
+                </div>
+                <button class="btn-continue">Continue</button>
+            </div>
+        </div>
+
+        <!-- Collection Stats Modal -->
+        <div id="collectionModal" class="modal">
+            <div class="modal-content full-width">
+                <span class="close">&times;</span>
+                <h2>🏆 COLLECTION STATS</h2>
+                <div class="collection-grid">
+                    <div class="stat-section">
+                        <h3>By Size</h3>
+                        <div id="bySizeStats"></div>
+                    </div>
+                    <div class="stat-section">
+                        <h3>By Rarity</h3>
+                        <div id="byRarityStats"></div>
+                    </div>
+                    <div class="stat-section">
+                        <h3>By Water Type</h3>
+                        <div id="byWaterStats"></div>
+                    </div>
+                    <div class="stat-section">
+                        <h3>Night Catches</h3>
+                        <div id="nightStats"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Combine the fun of "Cat Goes Fishing" + "Scale the Depths" | Your sprites go here!</p>
+            <button id="statsBtn" class="stats-btn">📊 Collection Stats</button>
+            <button id="instructionsBtn" class="instructions-btn">❓ How to Play</button>
+        </footer>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>How to Play</h2>
+            <div class="instructions">
+                <h3>🎣 Basic Controls:</h3>
+                <ul>
+                    <li><strong>Cast Line:</strong> Click the "CAST LINE" button to try fishing</li>
+                    <li><strong>Advance Time:</strong> Click "ADVANCE TIME" to move through the day (affects fish availability)</li>
+                    <li><strong>Choose Zone:</strong> Select Freshwater or Saltwater fishing zones</li>
+                </ul>
+                <h3>🌙 Night Fishing (3 AM - 6 AM):</h3>
+                <ul>
+                    <li>Special fish only appear at night!</li>
+                    <li>These include mystic creatures like Ghost Fish, Anglerfish, and the legendary Void Fish</li>
+                    <li>Night catches typically have higher point values</li>
+                </ul>
+                <h3>📊 Fish Statistics:</h3>
+                <ul>
+                    <li><strong>Size:</strong> Tiny, Small, Medium, Large (affects rarity)</li>
+                    <li><strong>Rarity:</strong> Common, Uncommon, Rare, Very Rare (affects points)</li>
+                    <li><strong>Points:</strong> Each fish has different point values (10-100 points)</li>
+                </ul>
+                <h3>🏆 Goal:</h3>
+                <ul>
+                    <li>Catch all 102 unique fish species!</li>
+                    <li>Collect thousands of points</li>
+                    <li>Discover special night-only creatures</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="data/fish.json"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>

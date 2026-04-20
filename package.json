@@ -1,0 +1,39 @@
+{
+  "name": "super-fishing-quest",
+  "version": "1.0.0",
+  "description": "A comprehensive fishing game combining mechanics from 'Cat Goes Fishing' and 'Scale the Depths' with 102+ unique fish and day/night cycles",
+  "main": "index.html",
+  "scripts": {
+    "start": "open index.html",
+    "test": "echo \"Run game in browser\"",
+    "build": "echo \"No build step required - vanilla JS\""
+  },
+  "keywords": [
+    "fishing",
+    "game",
+    "web",
+    "html5",
+    "canvas",
+    "casual",
+    "collection",
+    "fishing-game",
+    "night-fishing"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/super-fishing-quest"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/super-fishing-quest/issues"
+  },
+  "homepage": "https://github.com/yourusername/super-fishing-quest#readme",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "comments": "This project uses vanilla JavaScript - no external dependencies required!"
+  }
+}

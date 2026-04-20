@@ -82,21 +82,45 @@ async function loadFishData() {
 
 // Screen Navigation
 function showScreen(screenId) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    const screen = document.getElementById(screenId);
-    if (screen) {
-        screen.classList.add('active');
-        if (screenId === 'gameScreen' && gameState.isGameActive) {
-            animateCanvas();
+    console.log('showScreen called with:', screenId);
+    
+    try {
+        // Get all screens
+        const screens = document.querySelectorAll('.screen');
+        console.log('Found screen elements:', screens.length);
+        
+        // Remove active class from all
+        screens.forEach(s => {
+            s.classList.remove('active');
+        });
+        
+        // Get target screen
+        const screen = document.getElementById(screenId);
+        console.log('Target screen found:', screenId, !!screen);
+        
+        if (screen) {
+            screen.classList.add('active');
+            console.log('Active class added to:', screenId);
+            
+            // Call render functions if needed
+            if (screenId === 'gameScreen' && gameState.isGameActive) {
+                animateCanvas();
+            }
+            if (screenId === 'inventory') renderInventory();
+            if (screenId === 'stats') renderStats();
+            if (screenId === 'achievements') renderAchievements();
+            if (screenId === 'gallery') renderGallery();
+        } else {
+            console.error('Screen not found:', screenId);
         }
-        if (screenId === 'inventory') renderInventory();
-        if (screenId === 'stats') renderStats();
-        if (screenId === 'achievements') renderAchievements();
-        if (screenId === 'gallery') renderGallery();
+    } catch (e) {
+        console.error('Error in showScreen:', e);
     }
 }
 
 function startGame() {
+    alert('START GAME button clicked!');
+    console.log('startGame() called');
     gameState.isGameActive = true;
     gameState.inventory = [];
     gameState.score = 0;
@@ -107,6 +131,7 @@ function startGame() {
     gameState.currentTime = 360;
     gameState.currentZone = 'freshwater';
     gameState.currentLocation = 'Mountain Stream';
+    console.log('Game state reset, showing location select');
     showScreen('locationSelect');
 }
 
@@ -1091,7 +1116,34 @@ instructionsBtn.addEventListener('click', () => instructionsModal.classList.add(
 
 // Initialize game
 async function initGame() {
+    console.log('Game initializing...');
     await loadFishData();
+    console.log('Fish data loaded:', fishes.length);
+    
+    // Make functions globally accessible
+    window.showScreen = showScreen;
+    window.startGame = startGame;
+    window.selectLocation = selectLocation;
+    window.pauseGame = pauseGame;
+    window.resumeGame = resumeGame;
+    window.mainMenu = mainMenu;
+    window.filterInventory = filterInventory;
+    window.castLine = castLine;
+    window.advanceTime = advanceTime;
+    window.setDifficulty = setDifficulty;
+    window.exportSave = exportSave;
+    window.resetGame = resetGame;
+    window.closeCaughtModal = closeCaughtModal;
+    
+    // Add direct event listeners to all buttons
+    setTimeout(() => {
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                console.log('Button clicked:', btn.textContent, btn.onclick);
+            });
+        });
+        console.log('Game initialized - all buttons ready');
+    }, 100);
 }
 
 // Start the game

@@ -611,6 +611,18 @@ async function initGame() {
     document.getElementById('locationName').textContent = gameState.currentLocation;
     document.getElementById('waterDisplay').textContent = 'Freshwater';
     updateAllUI();
+    
+    // Make all functions globally accessible for onclick handlers
+    window.showScreen = showScreen;
+    window.startGame = startGame;
+    window.selectLocation = selectLocation;
+    window.castLine = castLine;
+    window.advanceTime = advanceTime;
+    window.pauseGame = pauseGame;
+    window.filterInventory = filterInventory;
+    window.closeCaughtModal = closeCaughtModal;
+    
+    console.log('Game initialized - all functions are globally accessible');
 }
 
 initGame();

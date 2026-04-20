@@ -3,158 +3,407 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Fishing Game - Depth & Adventure</title>
+    <title>Cat Goes Deep - Professional Fishing Game</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <h1>⛵ SUPER FISHING QUEST ⛵</h1>
-            <p class="subtitle">Catch 'Em All - From Depths to Stars</p>
-        </header>
-
-        <!-- Main Game Area -->
-        <div class="game-wrapper">
-            <!-- Left Panel - Info -->
-            <div class="left-panel">
-                <div class="game-stats">
-                    <div class="stat-box">
-                        <h3>🕐 TIME</h3>
-                        <p id="gameTime">6:00 AM</p>
-                        <small id="timeType">Daytime</small>
-                    </div>
-                    <div class="stat-box">
-                        <h3>💰 SCORE</h3>
-                        <p id="score">0</p>
-                    </div>
-                    <div class="stat-box">
-                        <h3>🎣 CAUGHT</h3>
-                        <p id="fishCaught">0</p>
-                    </div>
-                    <div class="stat-box">
-                        <h3>📊 LEVEL</h3>
-                        <p id="level">1</p>
-                    </div>
-                </div>
-
-                <div class="fishing-zone">
-                    <h3>🌊 Zone Type</h3>
-                    <select id="waterType">
-                        <option value="freshwater">Freshwater</option>
-                        <option value="saltwater">Saltwater</option>
-                    </select>
-                </div>
-
-                <button id="castButton" class="cast-btn">🎣 CAST LINE</button>
-                <button id="timeButton" class="time-btn">⏰ ADVANCE TIME</button>
+    <!-- MAIN MENU SCREEN -->
+    <div id="mainMenu" class="screen active">
+        <div class="menu-container">
+            <div class="title-area">
+                <h1 class="game-title">CAT GOES DEEP</h1>
+                <p class="game-subtitle">A Professional Fishing Adventure</p>
             </div>
 
-            <!-- Center - Game Canvas/Fishing Area -->
-            <div class="center-panel">
-                <div class="fishing-area">
-                    <canvas id="gameCanvas" width="400" height="500"></canvas>
-                    <div class="fishing-status" id="fishingStatus">
-                        <p>Ready to fish...</p>
-                    </div>
-                </div>
+            <div class="menu-buttons">
+                <button class="menu-btn large" onclick="startGame()">START GAME</button>
+                <button class="menu-btn" onclick="showScreen('locationSelect')">CONTINUE</button>
+                <button class="menu-btn" onclick="showScreen('tutorial')">HOW TO PLAY</button>
+                <button class="menu-btn" onclick="showScreen('gallery')">COLLECTION</button>
+                <button class="menu-btn" onclick="showScreen('settings')">SETTINGS</button>
             </div>
 
-            <!-- Right Panel - Inventory -->
-            <div class="right-panel">
-                <div class="inventory-header">
-                    <h3>🎒 INVENTORY</h3>
-                    <button id="clearBtn" class="clear-btn">Clear</button>
-                </div>
-                <div class="inventory-stats">
-                    <p><strong>Capacity:</strong> <span id="capacity">0</span>/20</p>
-                    <p><strong>Species:</strong> <span id="speciesCount">0</span>/102</p>
-                </div>
-                <div id="inventory" class="inventory-list">
-                    <!-- Fish will be added here -->
-                </div>
+            <div class="menu-footer">
+                <p>Combines Cat Goes Fishing + Scale the Depths mechanics</p>
             </div>
         </div>
-
-        <!-- Caught Fish Modal -->
-        <div id="caughtModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2 id="fishName">You caught a Fish!</h2>
-                <div class="fish-info">
-                    <p id="fishDesc"></p>
-                    <p class="fish-points" id="fishPoints"></p>
-                    <p class="fish-rarity" id="fishRarity"></p>
-                </div>
-                <button class="btn-continue">Continue</button>
-            </div>
-        </div>
-
-        <!-- Collection Stats Modal -->
-        <div id="collectionModal" class="modal">
-            <div class="modal-content full-width">
-                <span class="close">&times;</span>
-                <h2>🏆 COLLECTION STATS</h2>
-                <div class="collection-grid">
-                    <div class="stat-section">
-                        <h3>By Size</h3>
-                        <div id="bySizeStats"></div>
-                    </div>
-                    <div class="stat-section">
-                        <h3>By Rarity</h3>
-                        <div id="byRarityStats"></div>
-                    </div>
-                    <div class="stat-section">
-                        <h3>By Water Type</h3>
-                        <div id="byWaterStats"></div>
-                    </div>
-                    <div class="stat-section">
-                        <h3>Night Catches</h3>
-                        <div id="nightStats"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p>Combine the fun of "Cat Goes Fishing" + "Scale the Depths" | Your sprites go here!</p>
-            <button id="statsBtn" class="stats-btn">📊 Collection Stats</button>
-            <button id="instructionsBtn" class="instructions-btn">❓ How to Play</button>
-        </footer>
     </div>
 
-    <!-- Instructions Modal -->
-    <div id="instructionsModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>How to Play</h2>
-            <div class="instructions">
-                <h3>🎣 Basic Controls:</h3>
+    <!-- LOCATION SELECT SCREEN -->
+    <div id="locationSelect" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">BACK</button>
+            <h2>SELECT LOCATION</h2>
+            <div class="spacer"></div>
+        </div>
+
+        <div class="location-grid">
+            <div class="location-card" onclick="selectLocation('freshwater', 'Mountain Stream')">
+                <div class="location-icon">STREAM</div>
+                <h3>Mountain Stream</h3>
+                <p class="location-desc">Freshwater • Easy difficulty</p>
+                <p class="location-fish">Common: Trout, Bass, Perch</p>
+            </div>
+
+            <div class="location-card" onclick="selectLocation('freshwater', 'Lake')">
+                <div class="location-icon">LAKE</div>
+                <h3>Deep Lake</h3>
+                <p class="location-desc">Freshwater • Medium difficulty</p>
+                <p class="location-fish">Medium: Carp, Pike, Catfish</p>
+            </div>
+
+            <div class="location-card" onclick="selectLocation('saltwater', 'Coastal Bay')">
+                <div class="location-icon">BAY</div>
+                <h3>Coastal Bay</h3>
+                <p class="location-desc">Saltwater • Medium difficulty</p>
+                <p class="location-fish">Medium: Mackerel, Snapper, Grouper</p>
+            </div>
+
+            <div class="location-card" onclick="selectLocation('saltwater', 'Deep Ocean')">
+                <div class="location-icon">OCEAN</div>
+                <h3>The Deep Ocean</h3>
+                <p class="location-desc">Saltwater • Hard difficulty</p>
+                <p class="location-fish">Rare: Shark, Marlin, Anglerfish</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN GAME SCREEN -->
+    <div id="gameScreen" class="screen">
+        <div class="game-header">
+            <div class="header-left">
+                <button class="menu-btn-small" onclick="pauseGame()">MENU</button>
+            </div>
+            <div class="header-center">
+                <h2 id="locationName">Location Name</h2>
+            </div>
+            <div class="header-right">
+                <div class="quick-stats">
+                    <span id="quickScore">Score: 0</span>
+                    <span id="quickTime">6:00 AM</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-main">
+            <!-- Left Panel -->
+            <div class="game-panel left-panel">
+                <div class="panel-section">
+                    <h3>STATS</h3>
+                    <div class="stat-row">
+                        <span>Total Score:</span>
+                        <span class="stat-value" id="statScore">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Fish Caught:</span>
+                        <span class="stat-value" id="statCaught">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Inventory:</span>
+                        <span class="stat-value" id="statInventory">0/20</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Species:</span>
+                        <span class="stat-value" id="statSpecies">0/102</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Depth Level:</span>
+                        <span class="stat-value" id="statLevel">1</span>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>TIME & CONDITIONS</h3>
+                    <div class="stat-row">
+                        <span>Current Time:</span>
+                        <span class="stat-value" id="timeDisplay">6:00 AM</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Time Type:</span>
+                        <span class="stat-value" id="timeTypeDisplay">Daytime</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Water Type:</span>
+                        <span class="stat-value" id="waterDisplay">Freshwater</span>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>ACTIONS</h3>
+                    <button class="action-btn" onclick="castLine()">CAST LINE</button>
+                    <button class="action-btn" onclick="advanceTime()">ADVANCE TIME</button>
+                    <button class="action-btn secondary" onclick="showScreen('inventory')">VIEW INVENTORY</button>
+                </div>
+            </div>
+
+            <!-- Center Canvas -->
+            <div class="game-panel center-panel">
+                <canvas id="gameCanvas" width="500" height="600"></canvas>
+                <div id="fishingStatus" class="fishing-status">Ready to fish...</div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="game-panel right-panel">
+                <div class="panel-section">
+                    <h3>LATEST CATCHES</h3>
+                    <div id="recentCatches" class="recent-list">
+                        <p class="empty-message">No catches yet...</p>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>QUICK STATS</h3>
+                    <div id="quickStats" class="stats-box">
+                        <div class="stat-item">
+                            <span>Common Fish:</span>
+                            <span id="commonCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Uncommon Fish:</span>
+                            <span id="uncommonCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Rare Fish:</span>
+                            <span id="rareCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Legendary Fish:</span>
+                            <span id="legendaryCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>MENU</h3>
+                    <button class="action-btn secondary full" onclick="showScreen('stats')">FULL STATISTICS</button>
+                    <button class="action-btn secondary full" onclick="showScreen('achievements')">ACHIEVEMENTS</button>
+                    <button class="action-btn secondary full" onclick="pauseGame()">BACK TO MENU</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INVENTORY SCREEN -->
+    <div id="inventory" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('gameScreen')">BACK TO GAME</button>
+            <h2>INVENTORY</h2>
+            <span class="header-stat" id="invCapacity">0/20</span>
+        </div>
+
+        <div class="inventory-filters">
+            <button class="filter-btn active" onclick="filterInventory('all')">ALL</button>
+            <button class="filter-btn" onclick="filterInventory('common')">COMMON</button>
+            <button class="filter-btn" onclick="filterInventory('uncommon')">UNCOMMON</button>
+            <button class="filter-btn" onclick="filterInventory('rare')">RARE</button>
+            <button class="filter-btn" onclick="filterInventory('very_rare')">LEGENDARY</button>
+        </div>
+
+        <div id="inventoryList" class="inventory-container">
+            <p class="empty-message">Inventory is empty. Start by casting your line!</p>
+        </div>
+    </div>
+
+    <!-- STATISTICS SCREEN -->
+    <div id="stats" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('gameScreen')">BACK TO GAME</button>
+            <h2>STATISTICS</h2>
+            <div class="spacer"></div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stats-card">
+                <h3>BY SIZE</h3>
+                <div id="statsBySize" class="stat-breakdown"></div>
+            </div>
+
+            <div class="stats-card">
+                <h3>BY RARITY</h3>
+                <div id="statsByRarity" class="stat-breakdown"></div>
+            </div>
+
+            <div class="stats-card">
+                <h3>BY WATER TYPE</h3>
+                <div id="statsByWater" class="stat-breakdown"></div>
+            </div>
+
+            <div class="stats-card">
+                <h3>NIGHT CATCHES</h3>
+                <div id="statsNight" class="stat-breakdown"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACHIEVEMENTS SCREEN -->
+    <div id="achievements" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('gameScreen')">BACK TO GAME</button>
+            <h2>ACHIEVEMENTS</h2>
+            <div class="spacer"></div>
+        </div>
+
+        <div class="achievements-grid" id="achievementsList">
+            <!-- Generated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- COLLECTION GALLERY -->
+    <div id="gallery" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">BACK</button>
+            <h2>COLLECTION GALLERY</h2>
+            <span id="galleryStats" class="header-stat">0/102</span>
+        </div>
+
+        <div class="gallery-grid" id="galleryGrid">
+            <!-- Generated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- TUTORIAL SCREEN -->
+    <div id="tutorial" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">BACK</button>
+            <h2>HOW TO PLAY</h2>
+            <div class="spacer"></div>
+        </div>
+
+        <div class="tutorial-content">
+            <div class="tutorial-section">
+                <h3>Welcome to Cat Goes Deep</h3>
+                <p>A game combining Cat Goes Fishing charm with Scale the Depths strategy. Catch all 102 fish species in the world!</p>
+            </div>
+
+            <div class="tutorial-section">
+                <h3>Basic Controls</h3>
                 <ul>
-                    <li><strong>Cast Line:</strong> Click the "CAST LINE" button to try fishing</li>
-                    <li><strong>Advance Time:</strong> Click "ADVANCE TIME" to move through the day (affects fish availability)</li>
-                    <li><strong>Choose Zone:</strong> Select Freshwater or Saltwater fishing zones</li>
-                </ul>
-                <h3>🌙 Night Fishing (3 AM - 6 AM):</h3>
-                <ul>
-                    <li>Special fish only appear at night!</li>
-                    <li>These include mystic creatures like Ghost Fish, Anglerfish, and the legendary Void Fish</li>
-                    <li>Night catches typically have higher point values</li>
-                </ul>
-                <h3>📊 Fish Statistics:</h3>
-                <ul>
-                    <li><strong>Size:</strong> Tiny, Small, Medium, Large (affects rarity)</li>
-                    <li><strong>Rarity:</strong> Common, Uncommon, Rare, Very Rare (affects points)</li>
-                    <li><strong>Points:</strong> Each fish has different point values (10-100 points)</li>
-                </ul>
-                <h3>🏆 Goal:</h3>
-                <ul>
-                    <li>Catch all 102 unique fish species!</li>
-                    <li>Collect thousands of points</li>
-                    <li>Discover special night-only creatures</li>
+                    <li><strong>Cast Line:</strong> Try to catch a fish at your current location</li>
+                    <li><strong>Advance Time:</strong> Move through the day cycle (affects fish availability)</li>
+                    <li><strong>View Inventory:</strong> Check your caught fish and manage collection</li>
                 </ul>
             </div>
+
+            <div class="tutorial-section">
+                <h3>Fishing Mechanics</h3>
+                <ul>
+                    <li>Different locations have different fish species</li>
+                    <li>Time of day affects which fish appear (day vs night fishing)</li>
+                    <li>Water type determines available species</li>
+                    <li>Rarer fish are harder to catch but worth more points</li>
+                </ul>
+            </div>
+
+            <div class="tutorial-section">
+                <h3>Depth System (Scale the Depths)</h3>
+                <ul>
+                    <li>Each catch increases your depth level</li>
+                    <li>Deeper levels unlock rarer fish</li>
+                    <li>Higher depth = better rewards</li>
+                </ul>
+            </div>
+
+            <div class="tutorial-section">
+                <h3>Fish Rarity Tiers</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0;">
+                    <div>Common - +10-30 points</div>
+                    <div>Uncommon - +20-50 points</div>
+                    <div>Rare - +50-80 points</div>
+                    <div>Legendary - +85-100 points</div>
+                </div>
+            </div>
+
+            <div class="tutorial-section">
+                <h3>Night Fishing</h3>
+                <p>Between 3 AM - 6 AM, special mystical fish appear. These rare creatures have unique appearances and high point values!</p>
+            </div>
+
+            <div class="tutorial-section">
+                <h3>Tips for Success</h3>
+                <ul>
+                    <li>Visit different locations to expand your collection</li>
+                    <li>Fish at night for rare species</li>
+                    <li>Check your statistics to see what species you're missing</li>
+                    <li>Build your complete collection to achieve 100%</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS SCREEN -->
+    <div id="settings" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">BACK</button>
+            <h2>SETTINGS</h2>
+            <div class="spacer"></div>
+        </div>
+
+        <div class="settings-content">
+            <div class="settings-section">
+                <h3>Game Settings</h3>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="soundToggle" checked>
+                        Sound Effects (Coming Soon)
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="musicToggle" checked>
+                        Background Music (Coming Soon)
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="animToggle" checked>
+                        Animations Enabled
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>Difficulty</h3>
+                <div class="difficulty-buttons">
+                    <button class="diff-btn active" onclick="setDifficulty('normal')">NORMAL (All Fish)</button>
+                    <button class="diff-btn" onclick="setDifficulty('hard')">HARD (Rarer Fish)</button>
+                    <button class="diff-btn" onclick="setDifficulty('expert')">EXPERT (Night Only)</button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>Data</h3>
+                <button class="action-btn secondary" onclick="exportSave()">EXPORT SAVE</button>
+                <button class="action-btn secondary" onclick="resetGame()">RESET GAME</button>
+            </div>
+
+            <div class="settings-footer">
+                <p>Game Version 2.0 - "Cat Goes Deep"</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAUSE MENU -->
+    <div id="pauseMenu" class="modal-screen">
+        <div class="pause-container">
+            <h2>PAUSED</h2>
+            <div class="pause-buttons">
+                <button class="menu-btn" onclick="resumeGame()">RESUME</button>
+                <button class="menu-btn" onclick="showScreen('inventory')">VIEW INVENTORY</button>
+                <button class="menu-btn" onclick="showScreen('stats')">STATISTICS</button>
+                <button class="menu-btn" onclick="mainMenu()">MAIN MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CAUGHT FISH MODAL -->
+    <div id="caughtFishModal" class="modal-screen">
+        <div class="modal-content">
+            <h2 id="caughtTitle">You Caught a Fish!</h2>
+            <div class="caught-fish-info">
+                <div id="caughtIcon" class="fish-icon"></div>
+                <div id="caughtDetails"></div>
+            </div>
+            <button class="menu-btn" onclick="closeCaughtModal()">CONTINUE</button>
         </div>
     </div>
 

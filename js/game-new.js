@@ -13,7 +13,12 @@ let gameState = {
     difficulty: 'normal',
     isGameActive: false,
     recentCatches: [],
-    depth: 1
+    depth: 1,
+    currentBoat: 'starter-boat',
+    unlockedBoats: ['starter-boat'],
+    unlockedRods: ['basic-rod'],
+    currentRod: 'basic-rod',
+    showRod: true
 };
 
 let fishes = [];
@@ -37,6 +42,61 @@ const achievements = [
 ];
 
 let unlockedAchievements = new Set();
+
+// Boats & Equipment Unlocks
+const boats = [
+    { id: 'starter-boat', name: 'Starter Boat', unlockAt: 0, capacity: 10 },
+    { id: 'fishing-boat', name: 'Fishing Boat', unlockAt: 10, capacity: 15 },
+    { id: 'speedboat', name: 'Speedboat', unlockAt: 30, capacity: 20 },
+    { id: 'yacht', name: 'Luxury Yacht', unlockAt: 60, capacity: 30 },
+    { id: 'research-vessel', name: 'Research Vessel', unlockAt: 100, capacity: 50 }
+];
+
+const rods = [
+    { id: 'basic-rod', name: 'Basic Rod', unlockAt: 0, catchRate: 0.6 },
+    { id: 'bamboo-rod', name: 'Bamboo Rod', unlockAt: 15, catchRate: 0.75 },
+    { id: 'carbon-rod', name: 'Carbon Rod', unlockAt: 35, catchRate: 0.85 },
+    { id: 'gold-rod', name: 'Golden Rod', unlockAt: 75, catchRate: 0.95 }
+];
+
+// Check for new unlocks
+function checkUnlocks() {
+    // Check boats
+    boats.forEach(boat => {
+        if (gameState.fishCaught >= boat.unlockAt && !gameState.unlockedBoats.includes(boat.id)) {
+            gameState.unlockedBoats.push(boat.id);
+            showMessage(`🚤 Unlocked: ${boat.name}!`);
+        }
+    });
+    
+    // Check rods
+    rods.forEach(rod => {
+        if (gameState.fishCaught >= rod.unlockAt && !gameState.unlockedRods.includes(rod.id)) {
+            gameState.unlockedRods.push(rod.id);
+            showMessage(`🎣 Unlocked: ${rod.name}!`);
+        }
+    });
+}
+
+function switchRod(rodId) {
+    if (gameState.unlockedRods.includes(rodId)) {
+        gameState.currentRod = rodId;
+        showMessage(`Switched to ${rods.find(r => r.id === rodId).name}`);
+        updateAllUI();
+    }
+}
+
+function switchBoat(boatId) {
+    if (gameState.unlockedBoats.includes(boatId)) {
+        gameState.currentBoat = boatId;
+        showMessage(`Switched to ${boats.find(b => b.id === boatId).name}`);
+        updateAllUI();
+    }
+}
+
+function showMessage(text) {
+    document.getElementById('fishingStatus').textContent = text;
+}
 
 // Particle system
 class Particle {
@@ -154,33 +214,22 @@ function isNightTime(minutes) {
 }
 
 function getAvailableFish() {
-    const isNight = isNightTime(gameState.currentTime);
-    const zone = gameState.currentZone;
-
-    let available = fishes.filter(fish => {
-        if (fish.waterType !== zone) return false;
-        if (fish.nightOnly && !isNight) return false;
-        return true;
-    });
-
-    // Difficulty scaling
-    if (gameState.difficulty === 'hard') {
-        available = available.filter(f => f.rarity !== 'common');
-    } else if (gameState.difficulty === 'expert') {
-        available = available.filter(f => f.nightOnly);
-    }
-
-    // If no fish available, return all for the water type (fallback)
-    if (available.length === 0) {
-        available = fishes.filter(f => f.waterType === zone);
-    }
-
-    return available;
+    // All fish are always available - simplifies the system
+    return fishes;
 }
 
 function catchRandomFish() {
     const available = getAvailableFish();
     if (available.length === 0) return null;
+
+    // Get current rod's catch rate
+    const currentRod = rods.find(r => r.id === gameState.currentRod);
+    const catchRate = currentRod.catchRate;
+    
+    // Check if catch succeeds based on rod
+    if (Math.random() > catchRate) {
+        return null; // Failed catch
+    }
 
     const weights = {
         'common': 100,
@@ -242,30 +291,14 @@ function castLine() {
 
             showCaughtFishModal(caughtFish);
             checkAchievements();
+            checkUnlocks();
         } else {
-            document.getElementById('fishingStatus').textContent = 'No fish in this zone at this time...';
+            document.getElementById('fishingStatus').textContent = 'The fish got away! Try again.';
         }
 
         updateAllUI();
         castBtn.disabled = false;
     }, 1000);
-}
-
-function advanceTime() {
-    gameState.currentTime = (gameState.currentTime + 60) % 1440;
-    
-    const isNight = isNightTime(gameState.currentTime);
-    const timeStr = getTimeString(gameState.currentTime);
-    
-    document.getElementById('timeDisplay').textContent = timeStr;
-    document.getElementById('timeTypeDisplay').textContent = isNight ? 'Night Time' : 'Daytime';
-    document.getElementById('quickTime').textContent = timeStr;
-    
-    if (isNight) {
-        document.getElementById('fishingStatus').textContent = 'Night time! Rare mystical fish appear!';
-    } else {
-        document.getElementById('fishingStatus').textContent = 'Daybreak. Standard fishing conditions.';
-    }
 }
 
 // UI Updates
@@ -276,10 +309,6 @@ function updateAllUI() {
     document.getElementById('statInventory').textContent = gameState.inventory.length + '/20';
     document.getElementById('statSpecies').textContent = gameState.caughtSpecies.size + '/102';
     document.getElementById('statLevel').textContent = gameState.level;
-    
-    document.getElementById('timeDisplay').textContent = getTimeString(gameState.currentTime);
-    document.getElementById('timeTypeDisplay').textContent = isNightTime(gameState.currentTime) ? 'Night Time' : 'Daytime';
-    document.getElementById('quickTime').textContent = getTimeString(gameState.currentTime);
     
     updateRarityStats();
     updateRecentCatches();
@@ -525,7 +554,15 @@ function resetGame() {
 }
 
 // Canvas Animation
+function resizeCanvas() {
+    if (!gameCanvas) return;
+    const rect = gameCanvas.parentElement.getBoundingClientRect();
+    gameCanvas.width = rect.width - 20; // Account for borders
+    gameCanvas.height = rect.height - 20;
+}
+
 function animateCanvas() {
+    resizeCanvas();
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
     
     // Draw water
@@ -536,11 +573,16 @@ function animateCanvas() {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
 
+    // Draw boat (simple representation)
+    drawBoat();
+    
+    // Draw rod with camera culling
+    if (gameState.showRod) {
+        drawRod();
+    }
+
     // Draw caught fish
     drawFishCollection();
-    
-    // Draw time
-    drawTimeInfo();
     
     // Update and draw particles
     particles.forEach(p => {
@@ -554,6 +596,58 @@ function animateCanvas() {
     }
 }
 
+function drawBoat() {
+    const boatY = gameCanvas.height - 120;
+    const boatX = gameCanvas.width / 2;
+    
+    // Boat hull
+    ctx.fillStyle = '#8B4513';
+    ctx.beginPath();
+    ctx.ellipse(boatX, boatY, 80, 30, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Boat outline
+    ctx.strokeStyle = '#654321';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // Boat name/label
+    const boat = boats.find(b => b.id === gameState.currentBoat);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(boat.name, boatX, boatY);
+}
+
+function drawRod() {
+    const rodStartX = gameCanvas.width / 2 - 40;
+    const rodStartY = gameCanvas.height - 120;
+    const rodEndX = gameCanvas.width / 2 + 60;
+    const rodEndY = gameCanvas.height - 250;
+    
+    // Rod line
+    ctx.strokeStyle = '#8B4513';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(rodStartX, rodStartY);
+    ctx.quadraticCurveTo(gameCanvas.width / 2, gameCanvas.height - 180, rodEndX, rodEndY);
+    ctx.stroke();
+    
+    // Rod handle
+    ctx.fillStyle = '#654321';
+    ctx.beginPath();
+    ctx.arc(rodStartX, rodStartY, 8, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Current rod label
+    const rod = rods.find(r => r.id === gameState.currentRod);
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 10px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(rod.name, rodStartX - 30, rodStartY + 15);
+}
+
 function drawFishCollection() {
     if (gameState.inventory.length === 0) {
         ctx.fillStyle = '#999';
@@ -564,9 +658,10 @@ function drawFishCollection() {
         return;
     }
 
-    const cols = 5;
+    const cols = 4;
     const cellWidth = gameCanvas.width / cols;
-    const cellHeight = 60;
+    const cellHeight = 100;
+    const blobRadius = 30;
 
     gameState.inventory.forEach((fish, index) => {
         const row = Math.floor(index / cols);
@@ -574,35 +669,24 @@ function drawFishCollection() {
         const x = col * cellWidth + cellWidth / 2;
         const y = 50 + row * cellHeight;
 
+        // Draw colorful blob
         ctx.fillStyle = getRarityColor(fish.rarity);
         ctx.beginPath();
-        ctx.arc(x, y, 18, 0, Math.PI * 2);
+        ctx.arc(x, y, blobRadius, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 12px Arial';
+        // Add border
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Draw fish name below blob
+        ctx.fillStyle = '#333';
+        ctx.font = 'bold 11px Arial';
         ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        const initials = fish.name.split(' ').map(w => w[0]).join('').substring(0, 2);
-        ctx.fillText(initials, x, y);
+        ctx.textBaseline = 'top';
+        ctx.fillText(fish.name, x, y + blobRadius + 5);
     });
-}
-
-function drawTimeInfo() {
-    const isNight = isNightTime(gameState.currentTime);
-    const timeStr = getTimeString(gameState.currentTime);
-
-    ctx.fillStyle = isNight ? '#667eea' : '#FFD700';
-    ctx.font = 'bold 18px Arial';
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'top';
-    ctx.fillText(timeStr, gameCanvas.width - 15, 15);
-    
-    if (isNight) {
-        ctx.font = '14px Arial';
-        ctx.fillStyle = '#fff';
-        ctx.fillText('NIGHT FISHING', gameCanvas.width - 15, 40);
-    }
 }
 
 // Initialize
@@ -621,6 +705,13 @@ async function initGame() {
     window.pauseGame = pauseGame;
     window.filterInventory = filterInventory;
     window.closeCaughtModal = closeCaughtModal;
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        if (gameState.isGameActive) {
+            resizeCanvas();
+        }
+    });
     
     console.log('Game initialized - all functions are globally accessible');
 }

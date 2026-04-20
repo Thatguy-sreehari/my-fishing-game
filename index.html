@@ -115,14 +115,6 @@
                 <div class="panel-section">
                     <h3>TIME & CONDITIONS</h3>
                     <div class="stat-row">
-                        <span>Current Time:</span>
-                        <span class="stat-value" id="timeDisplay">6:00 AM</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Time Type:</span>
-                        <span class="stat-value" id="timeTypeDisplay">Daytime</span>
-                    </div>
-                    <div class="stat-row">
                         <span>Water Type:</span>
                         <span class="stat-value" id="waterDisplay">Freshwater</span>
                     </div>
@@ -131,14 +123,13 @@
                 <div class="panel-section">
                     <h3>ACTIONS</h3>
                     <button class="action-btn" onclick="castLine()">CAST LINE</button>
-                    <button class="action-btn" onclick="advanceTime()">ADVANCE TIME</button>
                     <button class="action-btn secondary" onclick="showScreen('inventory')">VIEW INVENTORY</button>
                 </div>
             </div>
 
             <!-- Center Canvas -->
             <div class="game-panel center-panel">
-                <canvas id="gameCanvas" width="500" height="600"></canvas>
+                <canvas id="gameCanvas"></canvas>
                 <div id="fishingStatus" class="fishing-status">Ready to fish...</div>
             </div>
 

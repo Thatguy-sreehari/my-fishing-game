@@ -114,6 +114,7 @@ function selectLocation(waterType, locationName) {
     gameState.currentZone = waterType;
     gameState.currentLocation = locationName;
     gameState.currentTime = 360;
+    gameState.isGameActive = true;
     
     document.getElementById('locationName').textContent = locationName;
     document.getElementById('waterDisplay').textContent = waterType.charAt(0).toUpperCase() + waterType.slice(1);
@@ -1091,10 +1092,6 @@ instructionsBtn.addEventListener('click', () => instructionsModal.classList.add(
 // Initialize game
 async function initGame() {
     await loadFishData();
-    updateUI();
-    updateTimeDisplay();
-    animateCanvas();
-    showMessage('Ready to fish! Click CAST LINE to start.');
 }
 
 // Start the game

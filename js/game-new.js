@@ -253,52 +253,64 @@ function catchRandomFish() {
 // Casting line
 function castLine() {
     if (gameState.inventory.length >= gameState.maxInventory) {
-        document.getElementById('fishingStatus').textContent = 'Inventory full! Clear some space.';
+        showMessage('🛑 Inventory full! Clear some space.');
         return;
     }
 
-    const castBtn = event.target;
-    castBtn.disabled = true;
-    document.getElementById('fishingStatus').textContent = 'Casting line...';
+    const castBtn = document.querySelector('[onclick*="castLine"]');
+    if (castBtn) castBtn.disabled = true;
+    
+    showMessage('🎣 Casting line... WAIT FOR THE BITE!');
 
+    // Wait for a bite (2-5 seconds)
+    const biteWait = 2000 + Math.random() * 3000;
+    
     setTimeout(() => {
-        const caughtFish = catchRandomFish();
+        showMessage('💫 You\'ve got a bite! REEL IT IN!');
         
-        if (caughtFish) {
-            const catchData = {
-                ...caughtFish,
-                caughtTime: gameState.currentTime,
-                caughtDate: new Date().toLocaleString()
-            };
+        // Time to reel in (3-7 seconds)
+        const reelTime = 3000 + Math.random() * 4000;
+        
+        setTimeout(() => {
+            const caughtFish = catchRandomFish();
             
-            gameState.inventory.push(catchData);
-            gameState.caughtSpecies.add(caughtFish.id);
-            gameState.score += caughtFish.points;
-            gameState.fishCaught += 1;
-            gameState.level = Math.floor(gameState.fishCaught / 10) + 1;
-            gameState.depth = Math.floor(gameState.fishCaught / 5) + 1;
-            
-            // Add to recent catches (max 5)
-            gameState.recentCatches.unshift(caughtFish.name);
-            if (gameState.recentCatches.length > 5) {
-                gameState.recentCatches.pop();
+            if (caughtFish) {
+                const catchData = {
+                    ...caughtFish,
+                    caughtTime: gameState.currentTime,
+                    caughtDate: new Date().toLocaleString()
+                };
+                
+                gameState.inventory.push(catchData);
+                gameState.caughtSpecies.add(caughtFish.id);
+                gameState.score += caughtFish.points;
+                gameState.fishCaught += 1;
+                gameState.level = Math.floor(gameState.fishCaught / 10) + 1;
+                gameState.depth = Math.floor(gameState.fishCaught / 5) + 1;
+                
+                // Add to recent catches (max 5)
+                gameState.recentCatches.unshift(caughtFish.name);
+                if (gameState.recentCatches.length > 5) {
+                    gameState.recentCatches.pop();
+                }
+
+                // Add particles
+                for (let i = 0; i < 20; i++) {
+                    particles.push(new Particle(gameCanvas.width / 2, gameCanvas.height / 3));
+                }
+
+                showCaughtFishModal(caughtFish);
+                checkAchievements();
+                checkUnlocks();
+            } else {
+                showMessage('❌ The line broke! Try again.');
             }
 
-            // Add particles
-            for (let i = 0; i < 15; i++) {
-                particles.push(new Particle(gameCanvas.width / 2, gameCanvas.height / 2));
-            }
-
-            showCaughtFishModal(caughtFish);
-            checkAchievements();
-            checkUnlocks();
-        } else {
-            document.getElementById('fishingStatus').textContent = 'The fish got away! Try again.';
-        }
-
-        updateAllUI();
-        castBtn.disabled = false;
-    }, 1000);
+            updateAllUI();
+            if (castBtn) castBtn.disabled = false;
+        }, reelTime);
+        
+    }, biteWait);
 }
 
 // UI Updates
@@ -597,13 +609,17 @@ function animateCanvas() {
 }
 
 function drawBoat() {
-    const boatY = gameCanvas.height - 120;
-    const boatX = gameCanvas.width / 2;
+    const boatY = gameCanvas.height - 80;
+    const boatX = 100;
     
-    // Boat hull
+    // Boat hull (side view)
     ctx.fillStyle = '#8B4513';
     ctx.beginPath();
-    ctx.ellipse(boatX, boatY, 80, 30, 0, 0, Math.PI * 2);
+    ctx.moveTo(boatX - 50, boatY);
+    ctx.lineTo(boatX + 50, boatY);
+    ctx.lineTo(boatX + 60, boatY + 20);
+    ctx.lineTo(boatX - 60, boatY + 20);
+    ctx.closePath();
     ctx.fill();
     
     // Boat outline
@@ -617,21 +633,21 @@ function drawBoat() {
     ctx.font = 'bold 12px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(boat.name, boatX, boatY);
+    ctx.fillText(boat.name, boatX, boatY - 10);
 }
 
 function drawRod() {
-    const rodStartX = gameCanvas.width / 2 - 40;
-    const rodStartY = gameCanvas.height - 120;
-    const rodEndX = gameCanvas.width / 2 + 60;
-    const rodEndY = gameCanvas.height - 250;
+    const rodStartX = 80;
+    const rodStartY = gameCanvas.height - 100;
+    const rodEndX = gameCanvas.width / 2;
+    const rodEndY = gameCanvas.height / 3;
     
-    // Rod line
+    // Rod line (curved fishing line)
     ctx.strokeStyle = '#8B4513';
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(rodStartX, rodStartY);
-    ctx.quadraticCurveTo(gameCanvas.width / 2, gameCanvas.height - 180, rodEndX, rodEndY);
+    ctx.quadraticCurveTo(rodStartX + 100, rodStartY - 50, rodEndX, rodEndY);
     ctx.stroke();
     
     // Rod handle
@@ -645,7 +661,7 @@ function drawRod() {
     ctx.fillStyle = '#333';
     ctx.font = 'bold 10px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText(rod.name, rodStartX - 30, rodStartY + 15);
+    ctx.fillText(rod.name, rodStartX - 40, rodStartY - 20);
 }
 
 function drawFishCollection() {
@@ -701,7 +717,6 @@ async function initGame() {
     window.startGame = startGame;
     window.selectLocation = selectLocation;
     window.castLine = castLine;
-    window.advanceTime = advanceTime;
     window.pauseGame = pauseGame;
     window.filterInventory = filterInventory;
     window.closeCaughtModal = closeCaughtModal;
@@ -713,7 +728,41 @@ async function initGame() {
         }
     });
     
-    console.log('Game initialized - all functions are globally accessible');
+    // Hotkey controls
+    window.addEventListener('keydown', (e) => {
+        if (!gameState.isGameActive) return;
+        
+        switch(e.key.toLowerCase()) {
+            case ' ':  // Space = Cast line
+            case 'c':  // C = Cast
+                e.preventDefault();
+                castLine();
+                break;
+            case 'i':  // I = Inventory
+                e.preventDefault();
+                showScreen('inventory');
+                break;
+            case 's':  // S = Stats
+                e.preventDefault();
+                showScreen('stats');
+                break;
+            case 'a':  // A = Achievements
+                e.preventDefault();
+                showScreen('achievements');
+                break;
+            case 'g':  // G = Gallery
+                e.preventDefault();
+                showScreen('gallery');
+                break;
+            case 'escape':
+            case 'm':  // M = Menu
+                e.preventDefault();
+                pauseGame();
+                break;
+        }
+    });
+    
+    console.log('Game initialized - Hotkeys: SPACE/C=Cast, I=Inventory, S=Stats, A=Achievements, G=Gallery, M/ESC=Menu');
 }
 
 initGame();

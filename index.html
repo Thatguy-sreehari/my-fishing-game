@@ -86,58 +86,12 @@
         </div>
 
         <div class="game-main">
-            <!-- Left Panel -->
-            <div class="game-panel left-panel">
-                <div class="panel-section">
-                    <h3>STATS</h3>
-                    <div class="stat-row">
-                        <span>Total Score:</span>
-                        <span class="stat-value" id="statScore">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Fish Caught:</span>
-                        <span class="stat-value" id="statCaught">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Inventory:</span>
-                        <span class="stat-value" id="statInventory">0/20</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Species:</span>
-                        <span class="stat-value" id="statSpecies">0/102</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Depth Level:</span>
-                        <span class="stat-value" id="statLevel">1</span>
-                    </div>
-                </div>
-
-                <div class="panel-section">
-                    <h3>TIME & CONDITIONS</h3>
-                    <div class="stat-row">
-                        <span>Water Type:</span>
-                        <span class="stat-value" id="waterDisplay">Freshwater</span>
-                    </div>
-                </div>
-
-                <div class="panel-section">
-                    <h3>ACTIONS</h3>
-                    <button class="action-btn" onclick="castLine()">CAST LINE</button>
-                    <button class="action-btn secondary" onclick="showScreen('inventory')">VIEW INVENTORY</button>
-                </div>
-            </div>
-
-            <!-- Center Canvas -->
+            <!-- Full Screen Canvas -->
             <div class="game-panel center-panel">
                 <canvas id="gameCanvas"></canvas>
-                <div id="fishingStatus" class="fishing-status">Ready to fish...</div>
+                <div id="fishingStatus" class="fishing-status">Press SPACE or C to cast your line!</div>
             </div>
-
-            <!-- Right Panel -->
-            <div class="game-panel right-panel">
-                <div class="panel-section">
-                    <h3>LATEST CATCHES</h3>
-                    <div id="recentCatches" class="recent-list">
+        </div>
                         <p class="empty-message">No catches yet...</p>
                     </div>
                 </div>
